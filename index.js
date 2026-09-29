@@ -1,0 +1,19 @@
+import"./assets/styles-JE8YjOlG.js";import{a}from"./assets/vendor-N5iQpiFS.js";function C(t,o,e){t.forEach(s=>{s.classList.remove(e)}),o.classList.add(e)}const c={categoriesList:document.querySelector(".categories"),productsList:document.querySelector(".products"),notFound:document.querySelector(".not-found"),modal:document.querySelector(".modal"),modalCloseBtn:document.querySelector(".modal__close-btn"),modalProduct:document.querySelector(".modal-product")};function b(){c.modal.classList.add("modal--is-open"),document.body.style.overflow="hidden",document.addEventListener("keydown",m),c.modalCloseBtn.addEventListener("click",r),c.modal.addEventListener("click",_)}function r(){c.modal.classList.remove("modal--is-open"),document.body.style.overflow="",document.removeEventListener("keydown",m),c.modalCloseBtn.removeEventListener("click",r),c.modal.removeEventListener("click",_)}function m(t){t.code==="Escape"&&r()}function _(t){t.target===t.currentTarget&&r()}const $="https://dummyjson.com",d={CATEGORIES:"/products/category-list",PRODUCTS:"/products",PRODUCTS_BY_CATEGORY:"/products/category/",PRODUCT_BY_ID:"/products/"};a.defaults.baseURL=$;async function P(){const{data:t}=await a(d.CATEGORIES);return t}async function g(){const{data:t}=await a(d.PRODUCTS);return t}async function p(t){const{data:o}=await a(`${d.PRODUCTS_BY_CATEGORY}${t}`);return o}async function v(t){const{data:o}=await a(`${d.PRODUCT_BY_ID}${t}`);return o}function E(t){const e=["All",...t].map(n=>`<li class="categories__item">
+        <button class="categories__btn" type="button">${n}</button>
+      </li>`).join("");c.categoriesList.innerHTML=e,document.querySelector(".categories__btn").classList.add("categories__btn--active")}function y(t){const o=t.map(({id:e,thumbnail:s,title:n,brand:i,category:l,price:u})=>`<li class="products__item" data-id="${e}">
+    <img class="products__image" src="${s}" alt="${n}"/>
+    <p class="products__title">${n}</p>
+    <p class="products__brand"><span class="products__brand--bold">Brand: ${i}</span></p>
+    <p class="products__category">Category: ${l}</p>
+    <p class="products__price">Price: ${u}$</p>
+  </li>`).join("");c.productsList.insertAdjacentHTML("beforeend",o)}function T(){c.productsList.innerHTML=""}function h(){c.notFound.classList.add("not-found--visible")}function B(){c.notFound.classList.remove("not-found--visible")}function S({title:t,description:o,tags:e,shippingInformation:s,price:n,images:i,returnPolicy:l}){const u=e.map(L=>`<li>${L}</li>`).join(""),f=`<img class="modal-product__img" src="${i[0]}" alt="" />
+
+<div class="modal-product__content">
+<p class="modal-product__title">${t}</p>
+<ul class="modal-product__tags">${u}</ul>
+<p class="modal-product__description">${o}</p>
+<p class="modal-product__shipping-information">Shipping: ${s}</p>
+<p class="modal-product__return-policy">Return Policy: ${l}</p>
+<p class="modal-product__price">Price: ${n}$</p>
+<button class="modal-product__buy-btn" type="button">Buy</button> </div>`;c.modalProduct.innerHTML=f}async function k(){try{const t=await P();E(t);const{products:o}=await g();y(o)}catch(t){console.log(`Помилка iнiцiалiзацii cторiнки home ${t}`)}}async function w(t){const{target:o}=t;if(o.nodeName==="BUTTON"){T();try{const e=o.textContent;p(e);const s=document.querySelectorAll(".categories__btn");C(s,o,"categories__btn--active");let n;e==="All"?n=await g():n=await p(e),n.products.length>0?(B(),y(n.products)):h()}catch(e){console.log(`Помилка отримання продуктiв по категорii ${e}`)}}}async function A(t){const o=t.target.closest(".products__item");if(!o)return;const e=Number(o.dataset.id),s=await v(e);S(s),b()}document.addEventListener("DOMContentLoaded",k);c.categoriesList.addEventListener("click",w);c.productsList.addEventListener("click",A);
+//# sourceMappingURL=index.js.map
