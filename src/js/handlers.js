@@ -1,10 +1,11 @@
-import { toggleActiveClass } from './helpers';
+import { showTost, toggleActiveClass } from './helpers';
 import { openModal } from './modal';
 import {
   getCategories,
   getProductByCategory,
   getProductById,
   getProducts,
+  searchProduct,
 } from './products-api';
 import {
   clearProductList,
@@ -74,4 +75,32 @@ export async function handleProductClick(event) {
 
   renderProductInModal(product);
   openModal();
+}
+
+export async function handleSearchSubmit(event) {
+  event.preventDefault();
+
+  const query = event.currentTarget.elements.searchValue.value.trim();
+
+  if (!query) {
+    showTost('Please enter valid search query!', 'error');
+    return;
+  }
+
+  clearProductList();
+  try {
+    const { products } = await searchProduct(query);
+
+    if (products.length > 0) {
+      renderProducts(products);
+      hideNotFound();
+    } else {
+      showNotFound();
+    }
+  } catch (error) {
+    showTost(`Помилка отримання продуктiв по пошуку ${error}`, 'error');
+    console.log(`Помилка отримання продуктiв по пошуку ${error}`);
+  }
+
+  event.target.reset();
 }

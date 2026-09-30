@@ -25,3 +25,9 @@ export async function getProductById(productId) {
 
   return data;
 }
+
+export async function searchProduct(query) {
+  const { data } = await axios(`${API_ENDPOINTS.SEARCH}?q=${query}`);
+
+  return data;
+}
