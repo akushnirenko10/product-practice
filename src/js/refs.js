@@ -8,4 +8,11 @@ export const refs = {
   modalProduct: document.querySelector('.modal-product'),
 
   searchForm: document.querySelector('.search-form'),
+  clearSearchBtn: document.querySelector('.search-form__btn-clear'),
+
+  addToWishlistBtn: document.querySelector('.modal-product__btn--wishlist'),
+  addToCartBtn: document.querySelector('.modal-product__btn--cart'),
+
+  wishlistCount: document.querySelector('[data-wishlist-count]'),
+  cartCount: document.querySelector('[data-cart-count]'),
 };

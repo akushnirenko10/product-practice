@@ -1,3 +1,4 @@
+import iziToast from 'izitoast';
 import { showTost, toggleActiveClass } from './helpers';
 import { openModal } from './modal';
 import {
@@ -7,6 +8,7 @@ import {
   getProducts,
   searchProduct,
 } from './products-api';
+import { refs } from './refs';
 import {
   clearProductList,
   hideNotFound,
@@ -14,10 +16,25 @@ import {
   renderProductInModal,
   renderProducts,
   showNotFound,
+  updateCounter,
 } from './render-function';
+import {
+  addToCartItems,
+  addToWishlistItems,
+  getCartItems,
+  getWishlistItems,
+  isInCart,
+  isInWishlist,
+  removeFromCart,
+  removeFromStorage,
+  removeFromWishlist,
+} from './storage';
+
+let currentProductId = null;
 
 export async function initHomePage() {
   try {
+    updateCounter(getWishlistItems(), getCartItems());
     const categories = await getCategories();
     renderCategories(categories);
 
@@ -71,6 +88,7 @@ export async function handleProductClick(event) {
   }
 
   const productId = Number(productItem.dataset.id);
+  currentProductId = productId;
   const product = await getProductById(productId);
 
   renderProductInModal(product);
@@ -103,4 +121,53 @@ export async function handleSearchSubmit(event) {
   }
 
   event.target.reset();
+}
+
+export async function handleClearSearchBtnClick(event) {
+  refs.searchForm.reset();
+  clearProductList();
+
+  try {
+    const { products } = await getProducts();
+    renderProducts(products);
+    hideNotFound();
+  } catch (error) {
+    showTost(`Помилка отримання продуктiв ${error}`, 'error');
+    console.log(`Помилка отримання продуктiв ${error}`);
+    showNotFound();
+  }
+}
+
+export async function handleAddToWishlistBtnClick(event) {
+  if (!currentProductId) {
+    return;
+  }
+  if (isInWishlist(currentProductId)) {
+    removeFromWishlist(currentProductId);
+    refs.addToWishlistBtn.textContent = 'Add to Wishlist';
+    showTost('Removed from Wishlist', 'info');
+  } else {
+    addToWishlistItems(currentProductId);
+    refs.addToWishlistBtn.textContent = 'Remove from Wishlist';
+    showTost('Added to Wishlist', 'success');
+  }
+  updateCounter(getWishlistItems(), getCartItems());
+}
+
+export async function handleAddToCartBtbClick(event) {
+  console.log(currentProductId);
+
+  if (!currentProductId) {
+    return;
+  }
+  if (isInCart(currentProductId)) {
+    removeFromCart(currentProductId);
+    refs.addToCartBtn.textContent = 'Add to Cart';
+    showTost('Removed from Cart', 'info');
+  } else {
+    addToCartItems(currentProductId);
+    refs.addToCartBtn.textContent = 'Remove from Cart';
+    showTost('Added to Cart', 'success');
+  }
+  updateCounter(getWishlistItems(), getCartItems());
 }

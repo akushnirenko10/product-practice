@@ -1,4 +1,5 @@
 import { refs } from './refs';
+import { isInCart, isInWishlist } from './storage';
 
 export function renderCategories(categories) {
   const categoriesWithAll = ['All', ...categories];
@@ -49,6 +50,7 @@ export function hideNotFound() {
 }
 
 export function renderProductInModal({
+  id,
   title,
   description,
   tags,
@@ -70,4 +72,24 @@ export function renderProductInModal({
 <button class="modal-product__buy-btn" type="button">Buy</button> </div>`;
 
   refs.modalProduct.innerHTML = markup;
+  updateModalButtons(id);
+}
+
+export function updateModalButtons(id) {
+  if (isInWishlist(id)) {
+    refs.addToWishlistBtn.textContent = 'Remove from Wishlist';
+  } else {
+    refs.addToWishlistBtn.textContent = 'Add to Wishlist';
+  }
+
+  if (isInCart(id)) {
+    refs.addToCartBtn.textContent = 'Remove from Cart';
+  } else {
+    refs.addToCartBtn.textContent = 'Add to Cart';
+  }
+}
+
+export function updateCounter(wishlistItems, cartItems) {
+  refs.wishlistCount.textContent = wishlistItems.length;
+  refs.cartCount.textContent = cartItems.length;
 }

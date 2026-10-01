@@ -1,5 +1,8 @@
 import {
+  handleAddToCartBtbClick,
+  handleAddToWishlistBtnClick,
   handleCategoryClick,
+  handleClearSearchBtnClick,
   handleProductClick,
   handleSearchSubmit,
   initHomePage,
@@ -14,3 +17,7 @@ refs.categoriesList.addEventListener('click', handleCategoryClick);
 refs.productsList.addEventListener('click', handleProductClick);
 
 refs.searchForm.addEventListener('submit', handleSearchSubmit);
+refs.clearSearchBtn.addEventListener('click', handleClearSearchBtnClick);
+
+refs.addToWishlistBtn.addEventListener('click', handleAddToWishlistBtnClick);
+refs.addToCartBtn.addEventListener('click', handleAddToCartBtbClick);
