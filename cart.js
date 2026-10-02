@@ -1,0 +1,2 @@
+import{n as e,r as t,h as d,a,b as n,o as l,p as i,c as s,d as c,e as o}from"./assets/handlers-BLIbJHvu.js";import"./assets/vendor-4yCzdkXl.js";document.addEventListener("DOMContentLoaded",e);t.productsList.addEventListener("click",d);t.addToWishlistBtn.addEventListener("click",a);t.addToCartBtn.addEventListener("click",async()=>{n(),await l()});t.buyProductsBtn.addEventListener("click",i);window.addEventListener("scroll",s);t.scrollTopBtn.addEventListener("click",c);t.toggleThemeBtn.addEventListener("click",o);
+//# sourceMappingURL=cart.js.map
