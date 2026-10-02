@@ -65,3 +65,11 @@ export function removeFromCart(id) {
   const updatedCart = items.filter(item => item !== id);
   saveToStorage(STORAGE_KEYS.CART, updatedCart);
 }
+
+export function getTheme() {
+  return getFromStorage(STORAGE_KEYS.THEME) || 'light';
+}
+
+export function saveTheme(theme) {
+  saveToStorage(STORAGE_KEYS.THEME, theme);
+}

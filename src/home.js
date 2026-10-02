@@ -3,12 +3,14 @@ import {
   handleAddToWishlistBtnClick,
   handleCategoryClick,
   handleClearSearchBtnClick,
+  handleLoadMoreBtnClick,
   handleProductClick,
+  handleScrollTop,
+  handleScrollTopBtnClick,
   handleSearchSubmit,
+  handleToggleThemeBtnClick,
   initHomePage,
 } from './js/handlers';
-import { showTost } from './js/helpers';
-import { closeModal } from './js/modal';
 import { refs } from './js/refs';
 
 //Логіка сторінки Home
@@ -21,3 +23,10 @@ refs.clearSearchBtn.addEventListener('click', handleClearSearchBtnClick);
 
 refs.addToWishlistBtn.addEventListener('click', handleAddToWishlistBtnClick);
 refs.addToCartBtn.addEventListener('click', handleAddToCartBtbClick);
+
+refs.loadMoreBtn.addEventListener('click', handleLoadMoreBtnClick);
+
+window.addEventListener('scroll', handleScrollTop);
+refs.scrollTopBtn.addEventListener('click', handleScrollTopBtnClick);
+
+refs.toggleThemeBtn.addEventListener('click', handleToggleThemeBtnClick);

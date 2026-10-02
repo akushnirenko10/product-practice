@@ -15,4 +15,14 @@ export const refs = {
 
   wishlistCount: document.querySelector('[data-wishlist-count]'),
   cartCount: document.querySelector('[data-cart-count]'),
+
+  loadMoreBtn: document.querySelector('.load-more-btn'),
+
+  cartValue: document.querySelector('[data-count]'),
+  cartPrice: document.querySelector('[data-price]'),
+
+  buyProductsBtn: document.querySelector('.cart-summary__btn'),
+  scrollTopBtn: document.querySelector('.scroll-top-btn'),
+
+  toggleThemeBtn: document.querySelector('.theme-toggle-btn'),
 };

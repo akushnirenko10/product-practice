@@ -1,5 +1,12 @@
 import iziToast from 'izitoast';
-import { showTost, toggleActiveClass } from './helpers';
+import {
+  loadCartProducts,
+  loadWishlistProducts,
+  showTost,
+  toggleActiveClass,
+  toggleTheme,
+  updateLoadMoreBtn,
+} from './helpers';
 import { openModal } from './modal';
 import {
   getCategories,
@@ -11,38 +18,68 @@ import {
 import { refs } from './refs';
 import {
   clearProductList,
+  hideLoadMoreBtn,
   hideNotFound,
   renderCategories,
   renderProductInModal,
   renderProducts,
+  showLoadMoreBtn,
+  showLoadMoreBtnLoading,
   showNotFound,
+  updateCartSummary,
   updateCounter,
 } from './render-function';
 import {
   addToCartItems,
   addToWishlistItems,
   getCartItems,
+  getTheme,
   getWishlistItems,
   isInCart,
   isInWishlist,
   removeFromCart,
   removeFromStorage,
   removeFromWishlist,
+  saveTheme,
 } from './storage';
+import { STORAGE_KEYS } from './constants';
 
 let currentProductId = null;
+let currentPage = 1;
 
 export async function initHomePage() {
+  const userTheme = getTheme();
+  toggleTheme(userTheme);
+
   try {
     updateCounter(getWishlistItems(), getCartItems());
     const categories = await getCategories();
+
     renderCategories(categories);
 
-    const { products } = await getProducts();
+    const { products, total } = await getProducts(currentPage);
     renderProducts(products);
+    showLoadMoreBtn();
+    updateLoadMoreBtn(total, currentPage);
   } catch (err) {
     console.log(`Помилка iнiцiалiзацii cторiнки home ${err}`);
   }
+}
+
+export async function initWishlistPage() {
+  const userTheme = getTheme();
+  toggleTheme(userTheme);
+
+  updateCounter(getWishlistItems(), getCartItems());
+  await loadWishlistProducts();
+}
+
+export async function initCartPage() {
+  const userTheme = getTheme();
+  toggleTheme(userTheme);
+
+  updateCounter(getWishlistItems(), getCartItems());
+  await loadCartProducts();
 }
 
 export async function handleCategoryClick(event) {
@@ -53,10 +90,10 @@ export async function handleCategoryClick(event) {
   }
 
   clearProductList();
+  hideLoadMoreBtn();
 
   try {
     const category = target.textContent;
-    getProductByCategory(category);
 
     const allCategoriesButtons = document.querySelectorAll('.categories__btn');
     toggleActiveClass(allCategoriesButtons, target, 'categories__btn--active');
@@ -64,7 +101,9 @@ export async function handleCategoryClick(event) {
     let productsData;
 
     if (category === 'All') {
-      productsData = await getProducts();
+      currentPage = 1;
+      productsData = await getProducts(currentPage);
+      showLoadMoreBtn();
     } else {
       productsData = await getProductByCategory(category);
     }
@@ -106,6 +145,7 @@ export async function handleSearchSubmit(event) {
   }
 
   clearProductList();
+  hideLoadMoreBtn();
   try {
     const { products } = await searchProduct(query);
 
@@ -119,18 +159,22 @@ export async function handleSearchSubmit(event) {
     showTost(`Помилка отримання продуктiв по пошуку ${error}`, 'error');
     console.log(`Помилка отримання продуктiв по пошуку ${error}`);
   }
-
-  event.target.reset();
 }
 
 export async function handleClearSearchBtnClick(event) {
   refs.searchForm.reset();
   clearProductList();
+  currentPage = 1;
 
   try {
-    const { products } = await getProducts();
+    const { products, total } = await getProducts(currentPage);
     renderProducts(products);
     hideNotFound();
+    showLoadMoreBtn();
+    updateLoadMoreBtn(total, currentPage);
+    const categoryEl = document.querySelector('.categories__btn');
+    const allCategoriesBtns = document.querySelectorAll('.categories__btn');
+    toggleActiveClass(allCategoriesBtns, categoryEl, 'categories__btn--active');
   } catch (error) {
     showTost(`Помилка отримання продуктiв ${error}`, 'error');
     console.log(`Помилка отримання продуктiв ${error}`);
@@ -138,7 +182,7 @@ export async function handleClearSearchBtnClick(event) {
   }
 }
 
-export async function handleAddToWishlistBtnClick(event) {
+export async function handleAddToWishlistBtnClick() {
   if (!currentProductId) {
     return;
   }
@@ -155,8 +199,6 @@ export async function handleAddToWishlistBtnClick(event) {
 }
 
 export async function handleAddToCartBtbClick(event) {
-  console.log(currentProductId);
-
   if (!currentProductId) {
     return;
   }
@@ -170,4 +212,56 @@ export async function handleAddToCartBtbClick(event) {
     showTost('Added to Cart', 'success');
   }
   updateCounter(getWishlistItems(), getCartItems());
+}
+
+export async function handleLoadMoreBtnClick() {
+  currentPage += 1;
+  showLoadMoreBtnLoading();
+
+  try {
+    const { products, total } = await getProducts(currentPage);
+    renderProducts(products);
+    updateLoadMoreBtn(total, currentPage);
+  } catch (error) {
+    showTost(`Помилка клiку в loadMoreBtn ${error}`, 'error');
+    console.log(`Помилка клiку в loadMoreBtn ${error}`);
+  }
+}
+
+export function handleBuyProductsClick() {
+  const cartItems = getCartItems();
+  if (cartItems.length === 0) {
+    showTost('Your card is empty!', 'warning');
+    return;
+  }
+
+  showTost('Tanks for your purchase!', 'success');
+  removeFromStorage(STORAGE_KEYS.CART);
+  updateCounter(getWishlistItems(), getCartItems([]));
+  updateCartSummary([]);
+  window.location.reload();
+}
+
+export function handleScrollTop() {
+  if (window.scrollY > 400) {
+    refs.scrollTopBtn.classList.add('scroll-top-btn--visible');
+  } else {
+    refs.scrollTopBtn.classList.remove('scroll-top-btn--visible');
+  }
+}
+
+export function handleScrollTopBtnClick() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth',
+  });
+}
+
+export function handleToggleThemeBtnClick() {
+  const currentTheme = document.body.dataset.theme || 'light';
+
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+  toggleTheme(newTheme);
+  saveTheme(newTheme);
 }
